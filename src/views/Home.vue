@@ -1,219 +1,169 @@
 <template>
   <div class="home">
-    <a id="outerlink" ref="whatsapp" href="https://api.whatsapp.com/send?phone=+2347031228335">Click to connect +506 0000 0000</a>
-    <div class="intro">
-         <h1>Hi, I'm Ikbo, A Professional Photo & Videographer</h1>
-         <p>We offer the full spectrum of Media services. From creating standard Wedding photography experience to Fashion and Potrait Photography to Video Production.</p>
-         <div class="Btn" @click="loadWhatsapp"><i class="fa fa-whatsapp"></i> Let's talk</div>
-    </div>
-    <div class="imgPrev">
-      <img v-for="image in images" :key="image.src" :src="image.src" alt="">
-    </div>
-    <div class="profile">
-      <div v-for="profile in profiles" :key="profile.text">
-        <h2>{{ profile.figure }}<span>+</span></h2>
-        <p>{{ profile.text }}</p>
+    <Sidemenu v-if="sidebar" @closeSidebar="controlSidebar"/>
+    <div>
+      <Nav class="navbar" @toggleSidebar="controlSidebar"/>
+      <div class="meetBtn">
+        <div class="new" @click="toggleCreatemeet">New meeting</div>
+        <div class="join">Join with a code</div>
       </div>
     </div>
-    <div class="firstrow">
-      <div class="writeup">
-        <p style="color: rgb(225, 85, 10);">Potrait Photography</p>
-        <h2>We make story <br/> with every image </h2>
-        <p>At Ikbo photography and coverage, you are our super star and all activities at the studio is geared towards making you comfortable</p>
-        <div class="Btn" @click="contactUs">Book Now</div>
-      </div>
-      <div>
-        <img src="../assets/slides/twentyseven.jpg" alt="potrait img">
-      </div>
+    
+    <div class="intros" ref="welcomeSlide">
+         <div  v-show="currentIndex == index" v-for="(intro, index) in intros" :key="intro.header" class="welcomeNotes">
+            <img :src="intro.img" alt="">
+            <h3>{{ intro.header }}</h3>
+            <p>{{ intro.para }}</p>
+         </div>
+        
     </div>
-
-    <div class="secondrow">
-      <div class="writeup">
-        <p style="color: rgb(225, 85, 10);">Wedding Photography</p>
-        <h2>We make story <br/> with every image </h2>
-        <p>The people who hire me as a wedding photographer hire me not just because of my photographic style, they hire me because of the style of my personality. My style and personality match, so they know they're getting a genuine style.</p>
-        <div class="Btn" @click="contactUs">Book Now</div>
-      </div>
-      <div>
-        <img src="../assets/slides/fourteen.jpg" alt="potrait img">
-      </div>
+    <div class="slideIndicator">
+      <div :class="{active: currentIndex == index}" v-for="(intro, index) in intros" :key="intro.index"></div>
     </div>
-
+    <Createmeet v-if="createMeet" @closeCreate="toggleCreatemeet"/>
   </div>
 </template>
 
 <script>
-import { ref } from '@vue/reactivity'
-import { useRouter } from 'vue-router'
-
+import { ref } from 'vue'
+import Nav from '../components/Nav.vue'
+import Sidemenu from '../components/Sidemenu.vue'
+import Createmeet from '../components/Createmeet.vue'
 export default {
+  components: { Nav, Sidemenu, Createmeet},
   setup() {
-    let images = ref([
-        {src: require('../assets/slides/eight.jpg')},
-        {src: require('../assets/slides/eighteen.jpg')},
-        {src: require('../assets/slides/fourteen.jpg')},
-        {src: require('../assets/slides/one.jpg')},
-        {src: require('../assets/slides/thirtyone.jpg')},
-        {src: require('../assets/slides/thirtytwo.jpg')},
-        {src: require('../assets/slides/nineteen.jpg')},
-        {src: require('../assets/slides/twentyseven.jpg')},
-        {src: require('../assets/slides/twentythree.jpg')},
-        {src: require('../assets/slides/twentytwo.jpg')},
-        {src: require('../assets/slides/two.jpg')}
+    const createMeet = ref(false)
+    const sidebar = ref(false)
+    const currentIndex = ref(0)
+    const touchStart = ref(null)
+    const touchEnd = ref(null)
+    const intros = ref([
+      {header: 'Get a link you can share', img: 'https://www.gstatic.com/meet/user_edu_safety_light_e04a2bbb449524ef7e49ea36d5f25b65.svg', para: 'Tap New meeting to get a link you can send to people you want to meet with'},
+      {header: 'Your meeting is safe', img: 'https://www.gstatic.com/meet/user_edu_get_a_link_light_90698cd7b4ca04d3005c962a3756c42d.svg', para: 'No one can join a meeting unless invited or admitted by the host'},
+      {header: 'See everyone together', img: 'https://www.gstatic.com/meet/user_edu_brady_bunch_light_81fa864771e5c1dd6c75abe020c61345.svg', para: 'To see more people at the same time, Go to change layout in the more options Menu'}
     ])
-    const profiles = ref([
-      {text: 'Years of Expreience', figure: '11'},
-      {text: 'Complete Project', figure: '250'},
-      {text: 'Customer Base', figure: '134'}
-    ])
-    
-    const whatsapp = ref(null)
-    const loadWhatsapp = () => {
-      whatsapp.value.click()
+
+    const controlSidebar = () => {
+      sidebar.value = !sidebar.value
     }
-    const router = useRouter()
-    const contactUs= () => {
-      router.push("/contact")
+
+    const toggleCreatemeet = () => {
+      createMeet.value = !createMeet.value
+    }
+
+    // the slide functionality
+    const touchstart = (event) => {
+        touchStart.value = event.touches[0].clientX;
+        touchEnd.value = 0;
+    }
+    const touchmove = (event) => {
+        touchEnd.value = event.touches[0].clientX;
+    }
+    const touchend = () => {
+        if(touchStart.value > touchEnd.value ) {
+          if(currentIndex.value < intros.value.length-1) {
+            currentIndex.value++
+          }
+            
+        } else{
+          if(currentIndex.value > 0) {
+            currentIndex.value--
+          }
+        }
     }
     
 
-    return { images, profiles, loadWhatsapp, whatsapp, contactUs }
+    return {sidebar, createMeet, toggleCreatemeet, controlSidebar, intros, currentIndex, touchstart, touchmove, touchend }
+  }, 
+  mounted() {
+    let slide = this.$refs.welcomeSlide
+    slide.addEventListener('touchstart', (event) => {this.touchstart(event)})
+    slide.addEventListener('touchmove', (event) => {this.touchmove(event)})
+    slide.addEventListener('touchend', () => {this.touchend()})
+    
   }
 }
 </script>
 
 <style>
   .home{
-    text-align: center;
-  }
-  .home p{
-    font-size: 15px;
-    color: rgba(255, 255, 255, 0.412);
-  }
-  .intro{
-    width: 80%;
-    max-width: 600px;
-    margin: 20px auto;
-  }
-  .intro p{
-    margin: 10px auto;
-  }
-  .Btn{
-    background: rgb(225, 85, 10);
-    width: fit-content;
-    padding: 10px;
-    border-radius: 10px;
-    margin: 5px auto;
-    font-size: 17px;
-  }
-  .Btn:hover{
-    background: rgba(225, 85, 10, 0.618);
-  }
-  .Btn:active{
-    background: rgba(225, 85, 10, 0.618);
-  }
-  .imgPrev{
-    height: 200px;
-    width: 100%;
-    overflow-x: scroll;
+    height: 100vh;
     display: flex;
-    padding: 0 2%;
+    flex-direction: column;
+    justify-content: space-between;
   }
-  .imgPrev img{
-    width: auto;
-    height: 150px; 
-    margin: 10px;
-    border-radius: 20px;
-    box-shadow: 2px 2px 8px rgba(255, 255, 255, 0.624);
-  }
-  .profile{
+
+  div.meetBtn{
     display: flex;
     align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    width: 80%;
-    max-width: 600px;
-    margin: 20px auto;
+    justify-content: space-between;
+    margin: 5px auto;
+    padding: 0 10px;
   }
-  .profile div{
-    width: 46%;
-    margin: 2%;
+
+  div.meetBtn div{
+    width: 48%;
+    text-align: center;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
-  .profile div h2 span{
-    color: rgb(225, 85, 10);
+
+  div.new{
+    background: rgb(0, 145, 255);
+    color: white;
   }
-  .firstrow, .secondrow{
+  div.new:active{
+    background: rgb(0, 118, 208);
+  }
+
+  div.join{
+    border: 1px solid rgba(0, 0, 0, 0.261);
+    color: rgb(0, 145, 255);
+  }
+  div.join:active{
+    background: rgba(0, 0, 0, 0.159);;
+  }
+  
+  .intros{
+    text-align: center;
+    position: relative;
+  }
+
+  .intros div{
     width: 90%;
+    max-width: 400px;
     margin: 0 auto;
   }
-  .firstrow div, .secondrow div{
-    margin: 40px auto
-  }
-  .firstrow .writeup, .secondrow .writeup{
-    max-width: 400px;
-  }
-  .firstrow .Btn, .secondrow .Btn{
-    margin: 10px auto;
-    text-align: center;
-  }
-  .firstrow img{
-    width: 200px;
-    height: 250px;
-    object-fit: cover;
-    object-position: center top;
-    border-radius: 50px 0 0 0;
-  }
 
-  .secondrow img{
-    width: 200px;
+  .intros img{
+    width: 250px;
     height: 250px;
+    border-radius: 250px;
     object-fit: cover;
-    object-position: center top;
-    border-radius: 0 50px 0 0;
+    object-position: center;
+    margin: 20px auto;
   }
- 
   
-
-
-
-
-
-  /*for the responsieve screen of lg and above*/
-  @media screen and (min-width:600px){
-      .profile{
-        justify-content: space-between;
-      }
-      .profile div{
-        width: fit-content;
-      }
-      .firstrow, .secondrow{
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      .secondrow{
-        flex-direction: row-reverse;
-      }
-      .firstrow div, .secondrow div{
-        width: 44%
-      }
-      .firstrow .writeup, .secondrow .writeup{
-        text-align: left;
-      }
-      .firstrow .writeup h2, .secondrow .writeup h2{
-        font-size: 40px;
-      }
-      .firstrow div:nth-child(2){
-        text-align: right;
-      }
-      .secondrow div:nth-child(2){
-        text-align: left;
-      }
-      .firstrow .Btn, .secondrow .Btn{
-        margin: 10px 0;
-        text-align: center;
-      }
+  .slideIndicator{
+    width: fit-content;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
   }
+  .slideIndicator div{
+    width: 10px;
+    height: 10px;
+    border-radius: 10px;
+    background-color:rgba(0, 145, 255, 0.316);
+    margin: 10px 5px;
+  }
+  .slideIndicator .active{
+    background-color: rgb(0, 145, 255);
+  }
+
+  
 </style>
 
 

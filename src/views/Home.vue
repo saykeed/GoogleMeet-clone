@@ -5,7 +5,8 @@
       <Nav class="navbar" @toggleSidebar="controlSidebar"/>
       <div class="meetBtn">
         <div class="new" @click="toggleCreatemeet">New meeting</div>
-        <div class="join">Join with a code</div>
+        <router-link class="join" to="/join">Join with a code</router-link>
+        
       </div>
     </div>
     
@@ -27,6 +28,7 @@
 <script>
 import { ref } from 'vue'
 import Nav from '../components/Nav.vue'
+
 import Sidemenu from '../components/Sidemenu.vue'
 import Createmeet from '../components/Createmeet.vue'
 export default {
@@ -101,7 +103,7 @@ export default {
     padding: 0 10px;
   }
 
-  div.meetBtn div{
+  div.meetBtn div, div.meetBtn a.join{
     width: 48%;
     text-align: center;
     border-radius: 5px;
@@ -118,11 +120,12 @@ export default {
     background: rgb(0, 118, 208);
   }
 
-  div.join{
+  .meetBtn a.join{
     border: 1px solid rgba(0, 0, 0, 0.261);
     color: rgb(0, 145, 255);
+    text-decoration: none;
   }
-  div.join:active{
+  .meetBtn .join:active{
     background: rgba(0, 0, 0, 0.159);;
   }
   

@@ -1,8 +1,8 @@
 <template>
   <div class="nav">
-      <i class="material-icons" @click="callsidebar">menu</i>
-      <h3>Meet</h3>
       <div class="signin"></div>
+      <h3>Meet</h3>
+      <i class="material-icons" @click="callsidebar">menu</i>
   </div>
 </template>
 

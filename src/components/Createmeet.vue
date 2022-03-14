@@ -1,7 +1,7 @@
 <template>
   <div class="createmeet">
       <ul class="sidenav">
-          <li v-for="link in links" :key="link.text">
+          <li v-for="link in links" :key="link.text" @click="prepMeet(link.label)">
              <router-link :to="link.route"> <i class="material-icons">{{ link.icon }}</i> {{ link.text }}</router-link>
           </li>
           <li class="close" @click="closeMe"><i class="material-icons">close</i>Close</li>
@@ -14,17 +14,26 @@ import { ref } from '@vue/reactivity'
 export default {
     setup(props, { emit }) {
         const links = ref([
-            {text: 'Get a meeting link to share', route: '/', icon: 'insert_link'},
-            {text: 'Start an instant meeting', route: '/room', icon: 'videocam'},
-            {text: 'Schedule in Google Calendar', route: '/contact', icon: 'perm_contact_calendar'}
+            {text: 'Get a meeting link to share', label: 'createLink', route: '/', icon: 'insert_link'},
+            {text: 'Start an instant meeting', label: 'instantMeet', route: '/room', icon: 'videocam'},
+            {text: 'Schedule in Google Calendar', label: 'schedule', route: '/', icon: 'perm_contact_calendar'}
         ])
 
         const closeMe = () => {
             emit('closeCreate')
         }
+        const prepMeet = (label) => {
+            if( label == 'createLink'){
+
+            } else if( label == 'instantMeet'){
+                            
+            } else if( label == 'schedule'){
+
+            }
+        }
         
 
-        return { links, closeMe }
+        return { links, closeMe, prepMeet }
     }
 }
 </script>

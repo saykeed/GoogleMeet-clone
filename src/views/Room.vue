@@ -8,28 +8,49 @@
           <i class="material-icons">refresh</i>
           <i class="material-icons">volume_up</i>
       </div>
-      <video id="localvid" autoplay></video>
-      <video id="remotevid" @click="toggleOptions" autoplay></video>
+      <video ref="localvid" id="localvid" muted autoplay></video>
+      <video ref="remotevid" id="remotevid" @click="toggleOptions" autoplay></video>
       <div v-if="options" class="roomfoot">
           <i class="material-icons">call_end</i>
           <i class="material-icons">videocam</i>
           <i class="material-icons">mic</i>
           <i class="fa fa-ellipsis-v"></i>
       </div>
+      <p ref="errmsg"></p>
   </div>
 </template>
 
 <script>
 import { ref } from '@vue/reactivity'
 export default {
-setup() {
-    const options = ref(true)
-    const toggleOptions = () => {
-        options.value = !options.value
-    }
+    setup() {
+        const localvid = ref(null)
+        const options = ref(true)
+        const toggleOptions = () => {
+            options.value = !options.value
+        }
+        //{audio: true, video: true})
+        
+        
 
-    return { toggleOptions, options }
-}
+        return { toggleOptions, options, localvid }
+    },
+    mounted() {
+        //let p = this.$refs.errmsg
+        const getLocalStream = async () => {
+
+            navigator.mediaDevices.getUserMedia({audio: true, video: true})
+            .then((stream) => {
+                localvid.value.srcObject = stream
+            })
+            .catch((err) => {
+                console.log('error found:' , err)
+                p.innerHTML = err;
+            })
+            
+        }
+        getLocalStream()
+    }
 }
 </script>
 
@@ -64,9 +85,11 @@ setup() {
 }
 .roomhead i{
     vertical-align: middle;
+    cursor: pointer;
 }
 .roomhead p{
     width: 50%;
+    cursor: pointer
 }
 
 video#localvid{
@@ -110,6 +133,7 @@ video#remotevid{
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 .roomfoot i:first-child{
     background: red;

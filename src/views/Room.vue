@@ -41,7 +41,7 @@ export default {
 
             navigator.mediaDevices.getUserMedia({audio: true, video: true})
             .then((stream) => {
-                localvid.value.srcObject = stream
+                this.$refs.localvid.srcObject = stream
             })
             .catch((err) => {
                 console.log('error found:' , err)

@@ -99,7 +99,6 @@ video#localvid{
     width: 30%;
     height: 150px;
     border-radius: 15px;
-    background: white;
     z-index: 9999;
     border: 1px solid white;
 }

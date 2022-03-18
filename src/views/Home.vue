@@ -4,7 +4,7 @@
     <div>
       <Nav class="navbar" @toggleSidebar="controlSidebar"/>
       <div class="meetBtn">
-        <div class="new" @click="toggleCreatemeet">New meeting</div>
+        <router-link class="new" to="/room">New meeting</router-link>
         <router-link class="join" to="/join">Join with a code</router-link>
         
       </div>
@@ -28,22 +28,41 @@
 <script>
 import { ref } from 'vue'
 import Nav from '../components/Nav.vue'
-
 import Sidemenu from '../components/Sidemenu.vue'
 import Createmeet from '../components/Createmeet.vue'
+import { getFirestore, collection, onSnapshot,
+        addDoc, getDoc, where, query,
+        updateDoc
+} from 'firebase/firestore'
+import { useRouter } from 'vue-router'
 export default {
   components: { Nav, Sidemenu, Createmeet},
   setup() {
+    const router = useRouter()
     const createMeet = ref(false)
     const sidebar = ref(false)
     const currentIndex = ref(0)
-    const touchStart = ref(null)
-    const touchEnd = ref(null)
     const intros = ref([
       {header: 'Get a link you can share', img: 'https://www.gstatic.com/meet/user_edu_safety_light_e04a2bbb449524ef7e49ea36d5f25b65.svg', para: 'Tap New meeting to get a link you can send to people you want to meet with'},
       {header: 'Your meeting is safe', img: 'https://www.gstatic.com/meet/user_edu_get_a_link_light_90698cd7b4ca04d3005c962a3756c42d.svg', para: 'No one can join a meeting unless invited or admitted by the host'},
       {header: 'See everyone together', img: 'https://www.gstatic.com/meet/user_edu_brady_bunch_light_81fa864771e5c1dd6c75abe020c61345.svg', para: 'To see more people at the same time, Go to change layout in the more options Menu'}
     ])
+   
+   // global variables for the creating the meet room
+      let peerConnection;
+      let roomID;
+      
+      const configuration = {
+          iceServers: [
+              {
+              urls: [
+                  'stun:stun1.l.google.com:19302',
+                  'stun:stun2.l.google.com:19302',
+              ],
+              },
+          ],
+          iceCandidatePoolSize: 10,
+      };
 
     const controlSidebar = () => {
       sidebar.value = !sidebar.value
@@ -53,36 +72,16 @@ export default {
       createMeet.value = !createMeet.value
     }
 
-    // the slide functionality
-    const touchstart = (event) => {
-        touchStart.value = event.touches[0].clientX;
-        touchEnd.value = 0;
-    }
-    const touchmove = (event) => {
-        touchEnd.value = event.touches[0].clientX;
-    }
-    const touchend = () => {
-        if(touchStart.value > touchEnd.value ) {
-          if(currentIndex.value < intros.value.length-1) {
-            currentIndex.value++
-          }
-            
-        } else{
-          if(currentIndex.value > 0) {
-            currentIndex.value--
-          }
-        }
-    }
-    
+  
+   
 
-    return {sidebar, createMeet, toggleCreatemeet, controlSidebar, intros, currentIndex, touchstart, touchmove, touchend }
-  }, 
-  mounted() {
-    let slide = this.$refs.welcomeSlide
-    slide.addEventListener('touchstart', (event) => {this.touchstart(event)})
-    slide.addEventListener('touchmove', (event) => {this.touchmove(event)})
-    slide.addEventListener('touchend', () => {this.touchend()})
-    
+
+
+
+
+
+
+    return {sidebar, createMeet, toggleCreatemeet, controlSidebar, intros, currentIndex }
   }
 }
 </script>
@@ -103,16 +102,17 @@ export default {
     padding: 0 10px;
   }
 
-  div.meetBtn div, div.meetBtn a.join{
+  div.meetBtn a.new, div.meetBtn a.join{
     width: 48%;
     text-align: center;
     border-radius: 5px;
     padding: 10px;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
+    text-decoration: none;
   }
 
-  div.new{
+  .new{
     background: rgb(0, 145, 255);
     color: white;
   }
@@ -170,3 +170,34 @@ export default {
 </style>
 
 
+/*
+
+
+  <div class="new" @click="createRoom">New meeting</div>
+
+
+
+// create room function
+    const createRoom = async () => {
+        peerConnection = new RTCPeerConnection(configuration);
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        // create an offer and add to a doc in firebase store
+        // thus creating a room for this specific meet
+        const newRoom =  await addDoc(roomRef, {
+            offer: {
+                type: offer.type,
+                sdp: offer.sdp 
+            }
+        })
+        roomID = newRoom.id
+        router.push({
+          name: 'Room',
+          params: {
+            roomID: roomID,
+            peerConnection: peerConnection
+          }
+        })
+    }
+
+ */

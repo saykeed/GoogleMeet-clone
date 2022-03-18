@@ -11,45 +11,137 @@
       <video ref="localvid" id="localvid" muted autoplay></video>
       <video ref="remotevid" id="remotevid" @click="toggleOptions" autoplay></video>
       <div v-if="options" class="roomfoot">
-          <i class="material-icons">call_end</i>
+          <i class="material-icons" @click="endCall">call_end</i>
           <i class="material-icons">videocam</i>
           <i class="material-icons">mic</i>
           <i class="fa fa-ellipsis-v"></i>
       </div>
       <p ref="errmsg"></p>
+      <Modalid v-if="false"/>
   </div>
 </template>
 
 <script>
 import { ref } from '@vue/reactivity'
+import { getFirestore, collection, onSnapshot,
+        addDoc, getDoc, where, query, doc,
+        updateDoc
+} from 'firebase/firestore'
+import Modalid from '../components/Modalid.vue'
 export default {
+    components: { Modalid },
     setup() {
+       // const modalStatus = ref(false)
         const localvid = ref(null)
         const options = ref(true)
         const toggleOptions = () => {
             options.value = !options.value
         }
-        //{audio: true, video: true})
         
-        
+        const endCall = () => {
+            alert('ending call')
+        }
 
-        return { toggleOptions, options, localvid }
+        return { toggleOptions, options, localvid, endCall }
     },
     mounted() {
-        //let p = this.$refs.errmsg
-        const getLocalStream = async () => {
+        // global variables
+        let localStream
+        let peerConnection
+        let roomID
+        let data
+        const configuration = {
+            iceServers: [
+                {
+                    urls: [
+                        'stun:stun1.l.google.com:19302',
+                        'stun:stun2.l.google.com:19302',
+                        'stun:stun3.l.google.com:19302'
+                    ],
+                },
+            ],
+            iceCandidatePoolSize: 10,
+        };
 
+        // function to get the user media devices and stream
+        const getLocalStream = async () => {
             navigator.mediaDevices.getUserMedia({audio: true, video: true})
             .then((stream) => {
                 this.$refs.localvid.srcObject = stream
+                localStream = stream
             })
             .catch((err) => {
                 console.log('error found:' , err)
-               // p.innerHTML = err;
             })
             
         }
-        getLocalStream()
+        
+        
+        // connecting to the rooms document in firebase store
+        const roomsDB = getFirestore();
+        const roomRef = collection(roomsDB, 'Rooms');
+
+
+
+        // create room function
+        const createRoom = async () => {
+            await getLocalStream()
+            peerConnection = new RTCPeerConnection(configuration);
+            localStream.getTracks().forEach(track => {
+                peerConnection.addTrack(track, localStream);
+            });
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+
+            // create an offer and add to a doc in firebase store
+            // thus creating a room for this specific meet
+            const newRoom =  await addDoc(roomRef, {
+                offer: {
+                    type: offer.type,
+                    sdp: offer.sdp 
+                }
+            })
+            roomID = newRoom.id
+
+            // listen for updates in the room created by the caller
+            const q = query(roomRef, where("__name__", "==", roomID))
+            onSnapshot(q, async (snapshot) => {
+                snapshot.docs.forEach(item => {
+                    data = item.data()
+                }) 
+                console.log(roomID)
+                
+                if (!peerConnection.currentRemoteDescription && data.answer) {
+                    console.log('Set remote description: ', data.answer);
+                    const answer = new RTCSessionDescription(data.answer)
+                    //console.log(answer)
+                    await peerConnection.setRemoteDescription(answer);
+                    
+                } 
+                
+                
+            })
+
+            const candidatesCollection = doc(roomsDB, 'Rooms', roomID);
+            
+            peerConnection.addEventListener('icecandidate', event => {
+                console.log('ice gather evenel listener loading')
+                if (event.candidate) {
+                    const json = event.candidate.toJSON();
+                    //candidatesCollection.add(json);
+                    console.log(json)
+                } else {
+                    console.log('no ice gathered')
+                }
+            });
+        }
+
+        
+        
+
+
+        
+        createRoom()
     }
 }
 </script>
@@ -138,3 +230,21 @@ video#remotevid{
     background: red;
 }
 </style>
+
+
+/*
+
+
+const getLocalStream = async () => {
+
+    navigator.mediaDevices.getUserMedia({audio: true, video: true})
+    .then((stream) => {
+        this.$refs.localvid.srcObject = stream
+    })
+    .catch((err) => {
+        console.log('error found:' , err)
+    })
+    
+}
+
+ */

@@ -17,7 +17,7 @@
           <i class="fa fa-ellipsis-v"></i>
       </div>
       <p ref="errmsg"></p>
-      <Modalid v-if="false"/>
+      <Modalid v-if="false" />
   </div>
 </template>
 
@@ -31,7 +31,7 @@ import Modalid from '../components/Modalid.vue'
 export default {
     components: { Modalid },
     setup() {
-       // const modalStatus = ref(false)
+        const modalStatus = ref(false)
         const localvid = ref(null)
         const options = ref(true)
         const toggleOptions = () => {
@@ -42,7 +42,7 @@ export default {
             alert('ending call')
         }
 
-        return { toggleOptions, options, localvid, endCall }
+        return { toggleOptions, options, modalStatus, localvid, endCall }
     },
     mounted() {
         // global variables

@@ -15,7 +15,7 @@ export default {
 
 <style>
     .modalId{
-        background: rgba(0, 0, 0, 0.645);
+        background: rgba(0, 0, 0, 0.727); 
         color: black;
         width: 100vw;
         height: 100vh;

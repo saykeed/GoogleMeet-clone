@@ -98,7 +98,7 @@ export default {
                     sdp: answer.sdp
                 }
             })
-            console.log(peerConnection)
+            console.log('answer sent')
         }
         
 

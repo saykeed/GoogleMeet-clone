@@ -99,12 +99,12 @@ export default {
                 snapshot.docs.forEach(item => {
                     data = item.data()
                 }) 
-                console.log(roomID, peerConnection)
+                console.log(roomID)
                 
                 if (!peerConnection.currentRemoteDescription && data.answer) {
                     //console.log('Set remote description: ', data.answer);
                     const answer = new RTCSessionDescription(data.answer)
-                    console.log('answer:', answer)
+                    //console.log('answer:', answer)
                     await peerConnection.setRemoteDescription(answer);
                     
                 } 
@@ -115,11 +115,11 @@ export default {
             const candidatesCollection = doc(roomsDB, 'Rooms', roomID);
             
             peerConnection.addEventListener('icecandidate', event => {
-                console.log('ice gather evenel listener loading')
+                //console.log('ice gather evenel listener loading')
                 if (event.candidate) {
                     const json = event.candidate.toJSON();
                     //candidatesCollection.add(json);
-                    console.log(json)
+                    console.log( 'ICEs', json)
                 } else {
                     console.log('no ice gathered')
                 }

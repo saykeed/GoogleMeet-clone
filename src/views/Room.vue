@@ -74,6 +74,7 @@ export default {
         // create room function
         const createRoom = async () => {
             const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: true})
+            this.$refs.localvid.srcObject = stream
             localStream = stream
             peerConnection = new RTCPeerConnection(configuration);
             localStream.getTracks().forEach(track => {
@@ -98,12 +99,12 @@ export default {
                 snapshot.docs.forEach(item => {
                     data = item.data()
                 }) 
-                console.log(roomID)
+                console.log(roomID, peerConnection)
                 
                 if (!peerConnection.currentRemoteDescription && data.answer) {
-                    console.log('Set remote description: ', data.answer);
+                    //console.log('Set remote description: ', data.answer);
                     const answer = new RTCSessionDescription(data.answer)
-                    //console.log(answer)
+                    console.log('answer:', answer)
                     await peerConnection.setRemoteDescription(answer);
                     
                 } 

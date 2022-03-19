@@ -70,6 +70,7 @@ export default {
         const fetchRoom = async () => {
             // function to get the user media devices and stream
             const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: true})
+            this.$refs.localvid.srcObject = stream
             localStream = stream
             //add the local streams to the peer connection object
             localStream.getTracks().forEach(track => {

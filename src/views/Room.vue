@@ -92,6 +92,7 @@ export default {
                 }
             })
             roomID = newRoom.id 
+            console.log(roomID)
 
             // listen for updates in the room created by the caller
             const q = query(roomRef, where("__name__", "==", roomID))
@@ -99,17 +100,17 @@ export default {
                 snapshot.docs.forEach(item => {
                     data = item.data()
                 }) 
-                console.log(roomID)
+                console.log('first', peerConnection)
                 
                 if (!peerConnection.currentRemoteDescription && data.answer) {
                     //console.log('Set remote description: ', data.answer);
                     const answer = new RTCSessionDescription(data.answer)
                     //console.log('answer:', answer)
                     await peerConnection.setRemoteDescription(answer);
-                    
-                } 
+                    console.log('check ICEs',peerConnection)
+                }
                 
-                
+
             })
 
             const candidatesCollection = doc(roomsDB, 'Rooms', roomID);

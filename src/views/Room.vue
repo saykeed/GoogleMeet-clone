@@ -60,6 +60,7 @@ export default {
         let peerConnection
         let roomID
         let data
+        
         const configuration = {
             iceServers: [
                 {
@@ -72,7 +73,8 @@ export default {
             ],
             iceCandidatePoolSize: 10,
         };
-
+        
+       
         
         // connecting to the rooms document in firebase store
         const roomsDB = getFirestore();
@@ -102,6 +104,17 @@ export default {
             this.roomID = newRoom.id
             this.modalStatus = true
             console.log(roomID)
+            await peerConnection.addEventListener('icecandidate', event => {
+                //console.log('ice gather evenel listener loading')
+                if (event.candidate) {
+                    //const json = event.candidate.toJSON();
+                    //candidatesCollection.add(json);
+                    console.log( 'ICEs', event.candidate)
+                } else {
+                    console.log('no ice gathered')
+                }
+            });
+            console.log('i am after the event listsener')
             
 
             // listen for updates in the room created by the caller
@@ -122,18 +135,9 @@ export default {
                 
             })
 
-            const candidatesCollection = doc(roomsDB, 'Rooms', roomID);
+            //const candidatesCollection = doc(roomsDB, 'Rooms', roomID);
             
-            peerConnection.addEventListener('icecandidate', event => {
-                //console.log('ice gather evenel listener loading')
-                if (event.candidate) {
-                    const json = event.candidate.toJSON();
-                    //candidatesCollection.add(json);
-                    console.log( 'ICEs', json)
-                } else {
-                    console.log('no ice gathered')
-                }
-            });
+            
         }
 
         
@@ -247,4 +251,31 @@ const getLocalStream = async () => {
     
 }
 
+
+const configuration = {
+            iceServers: [
+            {
+            urls: [
+                'stun:stun1.l.google.com:19302',
+                'stun:stun2.l.google.com:19302',
+            ],
+            },
+            {
+            urls: "turn:openrelay.metered.ca:80",
+            username: "openrelayproject",
+            credential: "openrelayproject"
+            },
+            {
+            urls: "turn:openrelay.metered.ca:443",
+            username: "openrelayproject",
+            credential: "openrelayproject"
+            },
+            {
+            urls: "turn:openrelay.metered.ca:443?transport=tcp",
+            username: "openrelayproject",
+            credential: "openrelayproject"
+            }
+        ],
+        iceCandidatePoolSize: 10,
+       }
  */

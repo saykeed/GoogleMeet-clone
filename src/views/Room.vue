@@ -89,9 +89,14 @@ export default {
             localStream.getTracks().forEach(track => {
                 peerConnection.addTrack(track, localStream);
             });
+            peerConnection.onicecandidate = (e) => {
+                console.log('onice',e.candidate)
+            }
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
-
+            peerConnection.onicecandidate = (e) => {
+                console.log('after onice',e.candidate)
+            }
             // create an offer and add to a doc in firebase store
             // thus creating a room for this specific meet
             const newRoom =  await addDoc(roomRef, {
@@ -104,7 +109,7 @@ export default {
             this.roomID = newRoom.id
             this.modalStatus = true
             console.log(roomID)
-            await peerConnection.addEventListener('icecandidate', event => {
+            peerConnection.addEventListener('icecandidate', event => {
                 console.log('ice gather evenel listener loading', event.candidate)
                 if (event.candidate == null) {
                     //const json = event.candidate.toJSON();

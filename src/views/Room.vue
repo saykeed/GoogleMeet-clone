@@ -60,6 +60,7 @@ export default {
         let peerConnection
         let roomID
         let data
+        let localCandidates = []
         
         const configuration = {
             iceServers: [
@@ -92,7 +93,10 @@ export default {
             
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
-            
+            peerConnection.onicecandidate = (e) => {
+                console.log('after onice',e.candidate)
+                localCandidates.push(e.candidate)
+            }
             // create an offer and add to a doc in firebase store
             // thus creating a room for this specific meet
             const newRoom =  await addDoc(roomRef, {
@@ -105,9 +109,7 @@ export default {
             this.roomID = newRoom.id
             this.modalStatus = true
             console.log(roomID)
-            peerConnection.onicecandidate = (e) => {
-                console.log('after onice',e.candidate)
-            }
+            console.log(localCandidates)
             console.log('i am after the event listsener')
             
 

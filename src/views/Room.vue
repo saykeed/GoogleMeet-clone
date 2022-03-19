@@ -105,8 +105,8 @@ export default {
             this.modalStatus = true
             console.log(roomID)
             await peerConnection.addEventListener('icecandidate', event => {
-                //console.log('ice gather evenel listener loading')
-                if (event.candidate) {
+                console.log('ice gather evenel listener loading', event.candidate)
+                if (event.candidate == null) {
                     //const json = event.candidate.toJSON();
                     //candidatesCollection.add(json);
                     console.log( 'ICEs', event.candidate)

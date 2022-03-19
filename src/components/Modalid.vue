@@ -1,15 +1,23 @@
 <template>
   <div class="modalId">
       <div class="modal">
-          <i class="material-icons">close</i>
-          <div>i am the modal</div>
+          <i class="material-icons" @click="closeModalId">close</i>
+          <p>Meeting Room created:</p>
+          <p class="id">{{ roomID }}</p>
       </div>
   </div>
 </template>
 
 <script>
 export default {
+    props: [ 'roomID'],
+    setup(props, { emit }) {
+        const closeModalId = () => {
+            emit('modalClose')
+        }
 
+        return { closeModalId }
+    }
 }
 </script>
 
@@ -36,6 +44,21 @@ export default {
         left: 50%;
         transform: translate(-50%, -50%);
         text-align: center;
+    }
+    .modalId .modal i{
+        margin: 5px auto;
+        padding: 10px;
+        cursor: pointer;
+    }
+    .modalId .modal i:active{
+        background: rgba(0, 0, 0, 0.268);
+        border-radius: 50%;
+    }
+    .modalId .modal p{
+        margin: 15px auto;
+    }
+    p.id{
+        color: red; 
     }
     
 </style>

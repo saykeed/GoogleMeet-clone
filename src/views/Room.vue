@@ -17,7 +17,7 @@
           <i class="fa fa-ellipsis-v"></i>
       </div>
       <p ref="errmsg"></p>
-      <Modalid v-if="false" />
+      <Modalid @modalClose="closeModalId" v-if="modalStatus" :roomID="roomID" />
   </div>
 </template>
 
@@ -30,6 +30,11 @@ import { getFirestore, collection, onSnapshot,
 import Modalid from '../components/Modalid.vue'
 export default {
     components: { Modalid },
+    data() {
+        return {
+            roomID: ''
+        }
+    },
     setup() {
         const modalStatus = ref(false)
         const localvid = ref(null)
@@ -42,7 +47,11 @@ export default {
             alert('ending call')
         }
 
-        return { toggleOptions, options, modalStatus, localvid, endCall }
+        const closeModalId = () => {
+            modalStatus.value = !modalStatus.value
+        }
+
+        return { toggleOptions, closeModalId, modalStatus, options, localvid, endCall }
     },
     mounted() {
         // global variables
@@ -69,8 +78,6 @@ export default {
         const roomsDB = getFirestore();
         const roomRef = collection(roomsDB, 'Rooms');
 
-
-
         // create room function
         const createRoom = async () => {
             const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: true})
@@ -92,7 +99,10 @@ export default {
                 }
             })
             roomID = newRoom.id 
+            this.roomID = newRoom.id
+            this.modalStatus = true
             console.log(roomID)
+            
 
             // listen for updates in the room created by the caller
             const q = query(roomRef, where("__name__", "==", roomID))
@@ -110,7 +120,6 @@ export default {
                     console.log('check ICEs',peerConnection)
                 }
                 
-
             })
 
             const candidatesCollection = doc(roomsDB, 'Rooms', roomID);

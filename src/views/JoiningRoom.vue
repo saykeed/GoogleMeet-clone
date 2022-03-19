@@ -47,6 +47,7 @@ export default {
         let localStream
         let remoteStream
         let roomID = this.roomID
+        let localCandidates
         let peerConnection = new RTCPeerConnection(configuration);
         
         const configuration = {

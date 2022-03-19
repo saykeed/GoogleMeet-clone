@@ -94,8 +94,10 @@ export default {
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
             peerConnection.onicecandidate = (e) => {
-                console.log('after onice',e.candidate)
-                localCandidates.push(e.candidate)
+                if(e.candidate) {
+                    localCandidates.push(e.candidate)
+                }
+                
             }
             // create an offer and add to a doc in firebase store
             // thus creating a room for this specific meet
@@ -103,7 +105,8 @@ export default {
                 offer: {
                     type: offer.type,
                     sdp: offer.sdp 
-                }
+                },
+                lc: localCandidates
             })
             roomID = newRoom.id 
             this.roomID = newRoom.id

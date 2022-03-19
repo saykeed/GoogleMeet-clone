@@ -63,19 +63,6 @@ export default {
             iceCandidatePoolSize: 10,
         };
 
-        // function to get the user media devices and stream
-        const getLocalStream = async () => {
-            navigator.mediaDevices.getUserMedia({audio: true, video: true})
-            .then((stream) => {
-                this.$refs.localvid.srcObject = stream
-                localStream = stream
-            })
-            .catch((err) => {
-                console.log('error found:' , err)
-            })
-            
-        }
-        
         
         // connecting to the rooms document in firebase store
         const roomsDB = getFirestore();
@@ -85,7 +72,8 @@ export default {
 
         // create room function
         const createRoom = async () => {
-            await getLocalStream()
+            const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: true})
+            localStream = stream
             peerConnection = new RTCPeerConnection(configuration);
             localStream.getTracks().forEach(track => {
                 peerConnection.addTrack(track, localStream);
@@ -101,7 +89,7 @@ export default {
                     sdp: offer.sdp 
                 }
             })
-            roomID = newRoom.id
+            roomID = newRoom.id 
 
             // listen for updates in the room created by the caller
             const q = query(roomRef, where("__name__", "==", roomID))

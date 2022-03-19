@@ -45,6 +45,7 @@ export default {
         // global variables
         let offer
         let localStream
+        let remoteStream
         let roomID = this.roomID
         let peerConnection = new RTCPeerConnection(configuration);
         
@@ -61,26 +62,21 @@ export default {
             iceCandidatePoolSize: 10,
         };
 
-        // function to get the user media devices and stream
-        const getLocalStream = async () => {
-            navigator.mediaDevices.getUserMedia({audio: true, video: true})
-            .then((stream) => {
-                this.$refs.localvid.srcObject = stream
-                localStream = stream
-            })
-            .catch((err) => {
-                console.log('error found:' , err)
-            })
-        }
-
-        //add the local streams to the peer connection object
-        localStream.getTracks().forEach(track => {
-            peerConnection.addTrack(track, localStream);
-        });
- 
         // making reference to the id of the room the user wants to join
         const roomsDB = getFirestore();
-        const roomRef = doc(roomsDB, 'Rooms', roomID);
+        const roomRef = doc(roomsDB, 'Rooms', roomID); 
+
+
+        const fetchRoom = async () => {
+            // function to get the user media devices and stream
+            const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: true})
+            localStream = stream
+            //add the local streams to the peer connection object
+            localStream.getTracks().forEach(track => {
+                peerConnection.addTrack(track, localStream);
+            });
+            getOffer()
+        }
 
         const getOffer = async () => {
             const getRoom = await getDoc(roomRef)
@@ -88,7 +84,6 @@ export default {
            sendAnswer(offer)
         }
         
-
         const sendAnswer = async (remoteOffer) => {
             const offer = remoteOffer.offer
             await peerConnection.setRemoteDescription(offer);
@@ -106,8 +101,8 @@ export default {
         }
         
 
-        getOffer()
-       
+        
+       fetchRoom()
     }
 }
 </script>

@@ -47,6 +47,7 @@ export default {
     mounted() {
         // global variables
         let localStream
+        let remoteStream
         let peerConnection
         let roomID
         let data

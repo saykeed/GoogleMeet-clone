@@ -95,7 +95,7 @@ export default {
                 
             })
             roomID = newRoom.id 
-            callerIceCollection = collection(roomID, 'callerCandidates')
+            callerIceCollection = collection(doc(roomsDB, 'Rooms', roomID), 'callerCandidates')
             
 
             const offer = await peerConnection.createOffer();

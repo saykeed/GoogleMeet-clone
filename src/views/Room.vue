@@ -106,12 +106,7 @@ export default {
             // create an offer and add to a doc in firebase store
             // thus creating a room for this specific meet
             const newRoom =  await addDoc(roomRef, {
-                offer: {
-                    type: offer.type,
-                    sdp: offer.sdp 
-                },
-                lc: localCandidates,
-                created: 'room created'
+                
             })
             roomID = newRoom.id 
             this.roomID = newRoom.id
@@ -242,18 +237,6 @@ video#remotevid{
 /*
 
 
-const getLocalStream = async () => {
-
-    navigator.mediaDevices.getUserMedia({audio: true, video: true})
-    .then((stream) => {
-        this.$refs.localvid.srcObject = stream
-    })
-    .catch((err) => {
-        console.log('error found:' , err)
-    })
-    
-}
-
 
 const configuration = {
             iceServers: [
@@ -281,4 +264,11 @@ const configuration = {
         ],
         iceCandidatePoolSize: 10,
        }
+ */
+
+ /*  
+
+
+
+
  */

@@ -97,7 +97,7 @@ export default {
                 if(e.candidate) {
                     localCandidates.push(e.candidate)
                 }
-                console.log
+                console.log(localCandidates)
                 
             }
             // create an offer and add to a doc in firebase store
@@ -106,15 +106,13 @@ export default {
                 offer: {
                     type: offer.type,
                     sdp: offer.sdp 
-                },
-                lc: {localCandidates}
+                }
             })
             roomID = newRoom.id 
             this.roomID = newRoom.id
             this.modalStatus = true
-            console.log(roomID, newRoom.lc)
-            console.log(localCandidates)
-            console.log('i am after the event listsener')
+            console.log(roomID)
+            console.log('array',localCandidates)
             
 
             // listen for updates in the room created by the caller

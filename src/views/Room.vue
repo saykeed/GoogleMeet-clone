@@ -60,7 +60,7 @@ export default {
         let peerConnection
         let roomID
         let data
-        let localCandidates = ['why na']
+        let callerIceCollection
         
         const configuration = {
             iceServers: [
@@ -83,6 +83,7 @@ export default {
 
         // create room function
         const createRoom = async () => {
+            
             const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: true})
             this.$refs.localvid.srcObject = stream
             localStream = stream
@@ -90,32 +91,37 @@ export default {
             localStream.getTracks().forEach(track => {
                 peerConnection.addTrack(track, localStream);
             });
+            const newRoom =  await addDoc(roomRef, {
+                
+            })
+            roomID = newRoom.id 
+            callerIceCollection = collection(roomID, 'callerCandidates')
             
+
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
             const localListener = () => {
                 peerConnection.onicecandidate = (e) => {
-                    if(e.candidate) {
-                        localCandidates.push(e.candidate.toJSON())
+                    if(!e.candidate) {
+                        return
                     }
                     console.log(e.candidate.toJSON())
+                    addDoc(callerIceCollection, e.candidate.toJSON())
                 }
             }
             await localListener()
             
             // create an offer and add to a doc in firebase store
             // thus creating a room for this specific meet
-            const newRoom =  await addDoc(roomRef, {
+            /*const newRoom =  await addDoc(roomRef, {
                 offer: {
                     type: offer.type,
                     sdp: offer.sdp 
                 }
             })
-            roomID = newRoom.id 
-            this.roomID = newRoom.id
+            */
             this.modalStatus = true
             console.log(roomID)
-            console.log('array',localCandidates)
             
 
             // listen for updates in the room created by the caller

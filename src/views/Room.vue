@@ -106,12 +106,13 @@ export default {
                 offer: {
                     type: offer.type,
                     sdp: offer.sdp 
-                }
+                },
+                test: localCandidates
             })
             roomID = newRoom.id 
             this.roomID = newRoom.id
             this.modalStatus = true
-            console.log(roomID)
+            console.log(roomID, 'newRoom.offer', newRoom.test)
             console.log('array',localCandidates)
             
 

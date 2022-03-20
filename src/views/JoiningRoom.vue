@@ -47,7 +47,7 @@ export default {
         let localStream
         let remoteStream
         let roomID = this.roomID
-        let localCandidates
+        let joinerCandidates
         let peerConnection = new RTCPeerConnection(configuration);
         
         const configuration = {
@@ -91,9 +91,21 @@ export default {
             await peerConnection.setRemoteDescription(offer);
             const answer = await peerConnection.createAnswer();
             await peerConnection.setLocalDescription(answer);
+            // function to listen for ice generated
+            const localListener = () => {
+                peerConnection.onicecandidate = (e) => {
+                    if(!e.candidate) {
+                        console.log('generated the last ice candidate')
+                        return
+                    }
+                    console.log(e.candidate.toJSON())
+                   // addDoc(callerIceCollection, e.candidate.toJSON())
+                }
+            }
+            await localListener()
             // update the room with the joiner's answer
-            const targetDoc = doc(roomsDB, 'Rooms', roomID)
-            updateDoc(targetDoc, {
+            //const targetDoc = doc(roomsDB, 'Rooms', roomID)
+            updateDoc(roomRef, {
                 answer: {
                     type: answer.type,
                     sdp: answer.sdp

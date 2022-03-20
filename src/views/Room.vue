@@ -60,7 +60,7 @@ export default {
         let peerConnection
         let roomID
         let data
-        let localCandidates = []
+        let localCandidates = ['why na']
         
         const configuration = {
             iceServers: [

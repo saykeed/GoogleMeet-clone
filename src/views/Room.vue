@@ -94,8 +94,9 @@ export default {
             const newRoom =  await addDoc(roomRef, {
                 
             })
-            roomID = newRoom.id 
-            callerIceCollection = collection(doc(roomsDB, 'Rooms', roomID), 'callerCandidates')
+            roomID = newRoom.id
+            const targetDoc = doc(roomsDB, 'Rooms', roomID)
+            callerIceCollection = collection(targetDoc, 'callerCandidates')
             
 
             const offer = await peerConnection.createOffer();
@@ -103,9 +104,10 @@ export default {
             const localListener = () => {
                 peerConnection.onicecandidate = (e) => {
                     if(!e.candidate) {
+                        console.log('generated the last ice candidate')
                         return
                     }
-                    console.log(e.candidate.toJSON())
+                    console.log('sending candidates to the caller room')
                     addDoc(callerIceCollection, e.candidate.toJSON())
                 }
             }
@@ -113,13 +115,16 @@ export default {
             
             // create an offer and add to a doc in firebase store
             // thus creating a room for this specific meet
-            /*const newRoom =  await addDoc(roomRef, {
+            
+           await updateDoc(targetDoc, {
                 offer: {
                     type: offer.type,
                     sdp: offer.sdp 
                 }
             })
-            */
+
+            // setting the modal roomID variable for the modal appears
+            this.roomID = roomID
             this.modalStatus = true
             console.log(roomID)
             
@@ -130,19 +135,16 @@ export default {
                 snapshot.docs.forEach(item => {
                     data = item.data()
                 }) 
-                console.log('first', peerConnection)
                 
                 if (!peerConnection.currentRemoteDescription && data.answer) {
                     //console.log('Set remote description: ', data.answer);
                     const answer = new RTCSessionDescription(data.answer)
                     //console.log('answer:', answer)
                     await peerConnection.setRemoteDescription(answer);
-                    console.log('check ICEs',peerConnection)
                 }
                 
             })
 
-            //const candidatesCollection = doc(roomsDB, 'Rooms', roomID);
             
             
         }

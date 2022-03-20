@@ -96,7 +96,7 @@ export default {
             const localListener = () => {
                 peerConnection.onicecandidate = (e) => {
                     if(e.candidate) {
-                        localCandidates.push(e.candidate)
+                        localCandidates.push(e.candidate.toJSON())
                     }
                     console.log(localCandidates)
                 }
@@ -106,7 +106,10 @@ export default {
             // create an offer and add to a doc in firebase store
             // thus creating a room for this specific meet
             const newRoom =  await addDoc(roomRef, {
-                
+                offer: {
+                    type: offer.type,
+                    sdp: offer.sdp 
+                }
             })
             roomID = newRoom.id 
             this.roomID = newRoom.id

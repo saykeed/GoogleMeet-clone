@@ -110,7 +110,8 @@ export default {
                     type: offer.type,
                     sdp: offer.sdp 
                 },
-                lc: localCandidates
+                lc: localCandidates,
+                created: 'room created'
             })
             roomID = newRoom.id 
             this.roomID = newRoom.id

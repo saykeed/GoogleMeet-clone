@@ -98,7 +98,7 @@ export default {
                     if(e.candidate) {
                         localCandidates.push(e.candidate.toJSON())
                     }
-                    console.log(localCandidates)
+                    console.log(e.candidate.toJSON())
                 }
             }
             await localListener()

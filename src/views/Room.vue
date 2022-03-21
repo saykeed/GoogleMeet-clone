@@ -145,9 +145,8 @@ export default {
             // listening for remote ice candidates in the database
 
             onSnapshot(collection(targetDoc, 'joinerCandidates'), async (snapshot) => {
-                console.log('snapshot',snapshot)
-                console.log('snapshot.data',snapshot.data())
-                
+                console.log('snapshot',snapshot.doc)
+                console.log('snapshot.data',snapshot.doc.data())
             })
 
             

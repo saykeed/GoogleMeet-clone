@@ -131,8 +131,8 @@ export default {
 
             // listen for updates in the room created by the caller
             const q = query(roomRef, where("__name__", "==", roomID))
-            onSnapshot(targetDoc, async (docs) => {
-                docs.forEach(item => {
+            onSnapshot(targetDoc, async (snapshot) => {
+                snapshot.forEach(item => {
                     data = item.data()
                 }) 
                 

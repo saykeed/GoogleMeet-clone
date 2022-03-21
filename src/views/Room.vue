@@ -139,7 +139,7 @@ export default {
                 if (!peerConnection.currentRemoteDescription && data.answer) {
                     //console.log('Set remote description: ', data.answer);
                     const answer = new RTCSessionDescription(data.answer)
-                    console.log('answer:', answer)
+                    //console.log('answer:', answer)
                     await peerConnection.setRemoteDescription(answer);
                 }
                 

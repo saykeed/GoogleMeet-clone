@@ -47,7 +47,7 @@ export default {
         let localStream
         let remoteStream
         let roomID = this.roomID
-        let joinerCandidates
+        let joinerIceCollection
         let peerConnection = new RTCPeerConnection(configuration);
         
         const configuration = {
@@ -77,6 +77,8 @@ export default {
             localStream.getTracks().forEach(track => {
                 peerConnection.addTrack(track, localStream);
             });
+            
+            joinerIceCollection = collection(roomRef, 'joinerCandidates')
             // function to listen for ice generated
             const localListener = () => {
                 peerConnection.onicecandidate = (e) => {
@@ -84,8 +86,8 @@ export default {
                         console.log('generated the last ice candidate')
                         return
                     }
-                    console.log(e.candidate.toJSON())
-                   // addDoc(callerIceCollection, e.candidate.toJSON())
+                    console.log('sending the joiner candidates to the room database')
+                   addDoc(joinerIceCollection, e.candidate.toJSON())
                 }
             }
             await localListener()

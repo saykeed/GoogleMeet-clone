@@ -91,14 +91,12 @@ export default {
             localStream.getTracks().forEach(track => {
                 peerConnection.addTrack(track, localStream);
             });
-            const newRoom =  await addDoc(roomRef, {
-                
-            })
+            // created an empty room just to generate an id
+            const newRoom =  await addDoc(roomRef, {})
             roomID = newRoom.id
             const targetDoc = doc(roomsDB, 'Rooms', roomID)
             callerIceCollection = collection(targetDoc, 'callerCandidates')
-            
-
+            // start creating ofer to be sent to the room database
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
             const localListener = () => {
@@ -115,7 +113,6 @@ export default {
             
             // create an offer and add to a doc in firebase store
             // thus creating a room for this specific meet
-            
            await updateDoc(targetDoc, {
                 offer: {
                     type: offer.type,
@@ -134,18 +131,24 @@ export default {
             onSnapshot(q, async (snapshot) => {
                 snapshot.forEach(item => {
                     data = item.data()
-                }) 
+                })
                 
                 if (!peerConnection.currentRemoteDescription && data.answer) {
                     //console.log('Set remote description: ', data.answer);
                     const answer = new RTCSessionDescription(data.answer)
-                    //console.log('answer:', answer)
+                    console.log('answer received')
                     await peerConnection.setRemoteDescription(answer);
                 }
                 
             })
 
+            // listening for remote ice candidates in the database
 
+            onSnapshot(collection(targetDoc, 'joinerCandidates'), async (snapshot) => {
+                console.log('snapshot',snapshot)
+                console.log('snapshot.data',snapshot.data())
+                
+            })
 
             
             

@@ -131,21 +131,21 @@ export default {
 
             // listen for updates in the room created by the caller
             const q = query(roomRef, where("__name__", "==", roomID))
-            onSnapshot(targetDoc, async (snapshot) => {
-                snapshot.docs.forEach(item => {
+            onSnapshot(targetDoc, async (docs) => {
+                docs.forEach(item => {
                     data = item.data()
                 }) 
                 
                 if (!peerConnection.currentRemoteDescription && data.answer) {
                     //console.log('Set remote description: ', data.answer);
                     const answer = new RTCSessionDescription(data.answer)
-                    //console.log('answer:', answer)
+                    console.log('answer:', answer)
                     await peerConnection.setRemoteDescription(answer);
                 }
                 
             })
 
-            
+
 
             
             

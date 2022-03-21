@@ -77,6 +77,20 @@ export default {
             localStream.getTracks().forEach(track => {
                 peerConnection.addTrack(track, localStream);
             });
+            // function to listen for ice generated
+            const localListener = () => {
+                peerConnection.onicecandidate = (e) => {
+                    if(!e.candidate) {
+                        console.log('generated the last ice candidate')
+                        return
+                    }
+                    console.log(e.candidate.toJSON())
+                   // addDoc(callerIceCollection, e.candidate.toJSON())
+                }
+            }
+            await localListener()
+
+            // invoking the function that get the offer from the room id the joiner inputed
             getOffer()
         }
 
@@ -91,18 +105,7 @@ export default {
             await peerConnection.setRemoteDescription(offer);
             const answer = await peerConnection.createAnswer();
             await peerConnection.setLocalDescription(answer);
-            // function to listen for ice generated
-            const localListener = () => {
-                peerConnection.onicecandidate = (e) => {
-                    if(!e.candidate) {
-                        console.log('generated the last ice candidate')
-                        return
-                    }
-                    console.log(e.candidate.toJSON())
-                   // addDoc(callerIceCollection, e.candidate.toJSON())
-                }
-            }
-            await localListener()
+            
             // update the room with the joiner's answer
             //const targetDoc = doc(roomsDB, 'Rooms', roomID)
             updateDoc(roomRef, {
